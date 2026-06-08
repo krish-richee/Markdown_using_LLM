@@ -496,20 +496,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.on_event("startup")
-async def warm_cache():
-    """Pre-load all heavy data into cache at startup so first request is instant."""
-    import asyncio
-    from utils.dynamodb import scan_products, scan_orders, scan_monthly_revenue
-    loop = asyncio.get_event_loop()
-    print("[startup] Warming cache — scanning DynamoDB...")
-    await loop.run_in_executor(None, scan_products)
-    print("[startup] Products cached")
-    await loop.run_in_executor(None, scan_monthly_revenue)
-    print("[startup] Monthly revenue cached")
-    await loop.run_in_executor(None, compute_sales_metrics)
-    print("[startup] Sales metrics cached")
-    print("[startup] Cache warm — all requests will be instant")
 
 ACTIONS_LOG = "data/actions_log.jsonl"
 
