@@ -236,8 +236,11 @@ def load_products() -> pd.DataFrame:
 
 
 def load_orders() -> pd.DataFrame:
-    # Always read from Excel — 80k rows is too large for DynamoDB free tier
-    df = pd.read_excel(DATA_PATH, sheet_name="orders")
+    if DATA_MODE == "dynamodb":
+        from utils.dynamodb import scan_orders
+        df = pd.DataFrame(scan_orders())
+    else:
+        df = pd.read_excel(DATA_PATH, sheet_name="orders")
     df["order_date"]      = pd.to_datetime(df["order_date"],     errors="coerce")
     df["grand_total"]     = pd.to_numeric(df["grand_total"],     errors="coerce").fillna(0)
     df["net_revenue"]     = pd.to_numeric(df["net_revenue"],     errors="coerce").fillna(0)
@@ -246,7 +249,11 @@ def load_orders() -> pd.DataFrame:
 
 
 def load_order_items() -> pd.DataFrame:
-    df = pd.read_excel(DATA_PATH, sheet_name="order_items")
+    if DATA_MODE == "dynamodb":
+        from utils.dynamodb import scan_orders
+        df = pd.DataFrame(scan_orders())
+    else:
+        df = pd.read_excel(DATA_PATH, sheet_name="order_items")
     df["order_date"]  = pd.to_datetime(df["order_date"],  errors="coerce")
     df["qty_ordered"] = pd.to_numeric(df["qty_ordered"],  errors="coerce").fillna(0)
     df["price"]       = pd.to_numeric(df["price"],        errors="coerce").fillna(0)
@@ -255,12 +262,16 @@ def load_order_items() -> pd.DataFrame:
 
 
 def load_customers() -> pd.DataFrame:
+    if DATA_MODE == "dynamodb":
+        return pd.DataFrame()
     df = pd.read_excel(DATA_PATH, sheet_name="customers")
     df["customer_created_date"] = pd.to_datetime(df["customer_created_date"], errors="coerce")
     return df
 
 
 def load_bq_events() -> pd.DataFrame:
+    if DATA_MODE == "dynamodb":
+        return pd.DataFrame()
     df = pd.read_excel(DATA_PATH, sheet_name="bq_events")
     df["event_date"]         = pd.to_datetime(df["event_date"], errors="coerce")
     df["event_value_in_usd"] = pd.to_numeric(df["event_value_in_usd"], errors="coerce").fillna(0)
@@ -268,7 +279,14 @@ def load_bq_events() -> pd.DataFrame:
 
 
 def load_store_performance() -> pd.DataFrame:
-    df = pd.read_excel(DATA_PATH, sheet_name="store_performance")
+    if DATA_MODE == "dynamodb":
+        try:
+            from utils.dynamodb import scan_store_performance
+            df = pd.DataFrame(scan_store_performance())
+        except:
+            return pd.DataFrame()
+    else:
+        df = pd.read_excel(DATA_PATH, sheet_name="store_performance")
     df["sell_through_rate"]  = pd.to_numeric(df["sell_through_rate"],  errors="coerce").fillna(0)
     df["avg_discount_depth"] = pd.to_numeric(df["avg_discount_depth"], errors="coerce").fillna(0)
     df["monthly_revenue"]    = pd.to_numeric(df["monthly_revenue"],    errors="coerce").fillna(0)
@@ -276,13 +294,23 @@ def load_store_performance() -> pd.DataFrame:
 
 
 def load_store_monthly_trends() -> pd.DataFrame:
-    df = pd.read_excel(DATA_PATH, sheet_name="store_monthly_trends")
+    if DATA_MODE == "dynamodb":
+        try:
+            from utils.dynamodb import scan_monthly_revenue
+            rows = scan_monthly_revenue()
+            df = pd.DataFrame(rows) if rows else pd.DataFrame()
+        except:
+            return pd.DataFrame()
+    else:
+        df = pd.read_excel(DATA_PATH, sheet_name="store_monthly_trends")
     df["revenue"]           = pd.to_numeric(df["revenue"],           errors="coerce").fillna(0)
     df["sell_through_rate"] = pd.to_numeric(df["sell_through_rate"], errors="coerce").fillna(0)
     return df
 
 
 def load_store_category_breakdown() -> pd.DataFrame:
+    if DATA_MODE == "dynamodb":
+        return pd.DataFrame()
     return pd.read_excel(DATA_PATH, sheet_name="store_category_breakdown")
 
 
