@@ -140,17 +140,29 @@ def get_dashboard(from_date: str = None, to_date: str = None):
     store_list = []
     if not stores.empty:
         for _, row in stores.head(6).iterrows():
-            st_val = float(row["sell_through_rate"] if "sell_through_rate" in row.index else 0)
-            name   = (row["store_name"] if "store_name" in row.index
-                      else row["store_id"] if "store_id" in row.index else "Store")
-            active = int(row["active_skus"] if "active_skus" in row.index
-                         else row["active_markdowns"] if "active_markdowns" in row.index else 0)
-            depth  = float(row["avg_discount_depth"] if "avg_discount_depth" in row.index else 0)
+            st_val = float(row.get("sell_through_rate", 0))
             store_list.append({
-                "name":         str(name),
+                "name":         str(row.get("store_name", row.get("store_id", "Store"))),
                 "sell_through": round(st_val, 1),
-                "active":       active,
-                "depth":        round(depth, 1),
+                "active":       int(row.get("active_skus", row.get("active_markdowns", 0))),
+                "depth":        round(float(row.get("avg_discount_depth", 0)), 1),
+                "tier":         "HOT" if st_val >= 75 else ("COLD" if st_val < 65 else "AVG"),
+            })
+    # Fallback — build store performance from orders city data
+    if not store_list and not completed.empty and "city" in completed.columns:
+        city_stats = completed.groupby("city").agg(
+            revenue=("net_revenue", "sum"),
+            orders=("order_id", "nunique") if "order_id" in completed.columns else ("net_revenue", "count")
+        ).reset_index()
+        city_stats = city_stats.sort_values("revenue", ascending=False).head(6)
+        max_rev = city_stats["revenue"].max()
+        for _, row in city_stats.iterrows():
+            st_val = round(float(row["revenue"]) / max_rev * 100, 1) if max_rev > 0 else 0
+            store_list.append({
+                "name":         str(row["city"]),
+                "sell_through": st_val,
+                "active":       int(row["orders"]),
+                "depth":        15.0,
                 "tier":         "HOT" if st_val >= 75 else ("COLD" if st_val < 65 else "AVG"),
             })
 
