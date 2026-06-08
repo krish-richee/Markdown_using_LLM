@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+groq
+google-generativeai
+tavily-python
+boto3
+pandas
+openpyxl
+python-dotenv
+pydantic
+httpx
+numpy
