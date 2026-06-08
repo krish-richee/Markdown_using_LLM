@@ -31,7 +31,23 @@
 #     allow_headers=["*"],
 # )
 
-# ACTIONS_LOG = "data/actions_log.jsonl"
+# 
+def _recompute_risk(df):
+    import numpy as np
+    df = df.copy()
+    df["clearance_risk"] = np.where(
+        (df["days_of_stock"] > 365) & (df["sell_through_rate"] < 20), "CRITICAL",
+        np.where(
+            (df["days_of_stock"] > 180) & (df["sell_through_rate"] < 40), "HIGH",
+            np.where(
+                (df["days_of_stock"] > 90) & (df["sell_through_rate"] < 60), "MEDIUM",
+                "LOW"
+            )
+        )
+    )
+    return df
+
+ACTIONS_LOG = "data/actions_log.jsonl"
 
 # def _load_actions():
 #     if not os.path.exists(ACTIONS_LOG):
