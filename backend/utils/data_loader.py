@@ -224,7 +224,10 @@ from config.settings import DATA_PATH, DATA_MODE
 def load_products() -> pd.DataFrame:
     if DATA_MODE == "dynamodb":
         from utils.dynamodb import scan_products
-        df = pd.DataFrame(scan_products())
+        from decimal import Decimal
+        rows = scan_products()
+        clean = [{k: float(v) if isinstance(v, Decimal) else v for k, v in r.items()} for r in rows]
+        df = pd.DataFrame(clean)
     else:
         df = pd.read_excel(DATA_PATH, sheet_name="product_catalogue")
 
@@ -238,7 +241,13 @@ def load_products() -> pd.DataFrame:
 def load_orders() -> pd.DataFrame:
     if DATA_MODE == "dynamodb":
         from utils.dynamodb import scan_orders
-        df = pd.DataFrame(scan_orders())
+        from decimal import Decimal
+        rows = scan_orders()
+        # Convert Decimal to float for all numeric fields
+        clean = []
+        for r in rows:
+            clean.append({k: float(v) if isinstance(v, Decimal) else v for k, v in r.items()})
+        df = pd.DataFrame(clean)
     else:
         df = pd.read_excel(DATA_PATH, sheet_name="orders")
     df["order_date"]      = pd.to_datetime(df["order_date"],     errors="coerce")
