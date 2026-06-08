@@ -499,7 +499,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+def _recompute_risk(df):
+    import numpy as np
+    df = df.copy()
+    df["clearance_risk"] = np.where(
+        (df["days_of_stock"] > 365) & (df["sell_through_rate"] < 20), "CRITICAL",
+        np.where(
+            (df["days_of_stock"] > 180) & (df["sell_through_rate"] < 40), "HIGH",
+            np.where(
+                (df["days_of_stock"] > 90) & (df["sell_through_rate"] < 60), "MEDIUM",
+                "LOW"
+            )
+        )
+    )
+    return df
 @app.get("/api/dashboard")
 def get_dashboard(from_date: str = None, to_date: str = None):
     metrics     = compute_sales_metrics()
