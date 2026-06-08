@@ -489,62 +489,16 @@ from config.settings         import MAX_CRITIC_RETRIES
 from utils.dynamodb          import scan_monthly_revenue
 
 app = FastAPI()
+
+@app.get("/health")
+def health(): return {"status": "ok"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("startup")
-async def warm_cache():
-    """Pre-load all heavy data into cache at startup so first request is instant."""
-    import asyncio
-    from utils.dynamodb import scan_products, scan_orders, scan_monthly_revenue
-    loop = asyncio.get_event_loop()
-    print("[startup] Warming cache — scanning DynamoDB...")
-    await loop.run_in_executor(None, scan_products)
-    print("[startup] Products cached")
-    await loop.run_in_executor(None, scan_monthly_revenue)
-    print("[startup] Monthly revenue cached")
-    await loop.run_in_executor(None, compute_sales_metrics)
-    print("[startup] Sales metrics cached")
-    print("[startup] Cache warm — all requests will be instant")
-
-ACTIONS_LOG = "data/actions_log.jsonl"
-
-def _load_actions():
-    if not os.path.exists(ACTIONS_LOG):
-        return []
-    with open(ACTIONS_LOG) as f:
-        return [json.loads(l) for l in f if l.strip()]
-
-def _save_action(action: dict):
-    os.makedirs("data", exist_ok=True)
-    with open(ACTIONS_LOG, "a") as f:
-        f.write(json.dumps(action) + "\n")
-
-def _run_agent(agent, product):
-    if hasattr(agent, "analyze"):
-        return agent.analyze(product)
-    elif hasattr(agent, "run"):
-        return agent.run(product)
-    return None
-
-def _recompute_risk(df):
-    import numpy as np
-    df = df.copy()
-    df["clearance_risk"] = np.where(
-        (df["days_of_stock"] > 365) & (df["sell_through_rate"] < 20), "CRITICAL",
-        np.where(
-            (df["days_of_stock"] > 180) & (df["sell_through_rate"] < 40), "HIGH",
-            np.where(
-                (df["days_of_stock"] > 90) & (df["sell_through_rate"] < 60), "MEDIUM",
-                "LOW"
-            )
-        )
-    )
-    return df
 
 @app.get("/api/dashboard")
 def get_dashboard(from_date: str = None, to_date: str = None):
@@ -859,73 +813,6 @@ def get_planner():
     
     
     
-# ── Notifications ──────────────────────────────────────────────────────────
-NOTIF_FILE = "data/notification_log.jsonl"
-
-@app.get("/api/notifications")
-def get_notifications():
-    if not os.path.exists(NOTIF_FILE):
-        return {"notifications": [], "total": 0, "high": 0, "medium": 0, "low": 0}
-    rows = []
-    with open(NOTIF_FILE) as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                try:
-                    rows.append(json.loads(line))
-                except:
-                    pass
-    rows = list(reversed(rows))
-    all_alerts = []
-    for r in rows:
-        for a in r.get("alerts", []):
-            all_alerts.append({
-                "timestamp":    r.get("timestamp", ""),
-                "product_id":   r.get("product_id", ""),
-                "product_name": r.get("product_name", ""),
-                "markdown_pct": r.get("markdown_pct", 0),
-                "health":       r.get("health", ""),
-                "verdict":      r.get("verdict", ""),
-                "type":         a.get("type", ""),
-                "severity":     a.get("severity", ""),
-                "message":      a.get("message", ""),
-            })
-    return {
-        "notifications": all_alerts,
-        "total":  len(all_alerts),
-        "high":   len([a for a in all_alerts if a["severity"] == "HIGH"]),
-        "medium": len([a for a in all_alerts if a["severity"] == "MEDIUM"]),
-        "low":    len([a for a in all_alerts if a["severity"] == "LOW"]),
-    }
-
-@app.post("/api/test-notify")
-def test_notification():
-    from agents.notification_agent import NotificationAgent
-    from agents.base_agent import CriticVerdict, FinalDecision
-    test_product = {
-        "product_id":      "TEST_001",
-        "product_name":    "Test Product",
-        "clearance_risk":  "HIGH",
-        "abc_class":       "C",
-        "is_dead_inventory": True,
-        "days_of_stock":   200,
-        "price":           999,
-    }
-    test_decision = FinalDecision(
-        product_id="TEST_001",
-        product_name="Test Product",
-        recommended_markdown_pct=30,
-        final_price=699,
-        health_badge="🟡 Caution",
-        coordinator_reasoning="Test notification",
-        critic_verdict=CriticVerdict(
-            status=AgentStatus.PASS,
-            reason="Test",
-            retry_count=0,
-        ),
-    )
-    result = NotificationAgent().notify(test_product, test_decision)
-    return {"status": "sent", "alerts": result["alerts_sent"]}
 # ── Notifications ──────────────────────────────────────────────────────────
 NOTIF_FILE = "data/notification_log.jsonl"
 
