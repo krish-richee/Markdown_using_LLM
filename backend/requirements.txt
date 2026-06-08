@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 groq
-google-generativeai
+google-genai
 tavily-python
 boto3
 pandas
