@@ -286,3 +286,16 @@ def scan_monthly_revenue() -> list:
         items.extend(resp.get("Items", []))
     _set_cache("monthly_revenue", items)
     return items
+def scan_stores() -> list:
+    """Scan all stores from DynamoDB."""
+    import boto3
+    dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
+    table    = dynamodb.Table("retailai_stores")
+    items    = []
+    resp     = table.scan()
+    items.extend(resp["Items"])
+    while "LastEvaluatedKey" in resp:
+        resp = table.scan(ExclusiveStartKey=resp["LastEvaluatedKey"])
+        items.extend(resp["Items"])
+    print(f"[dynamo] {len(items)} stores loaded")
+    return items

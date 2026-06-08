@@ -303,9 +303,13 @@ def load_bq_events() -> pd.DataFrame:
 def load_store_performance() -> pd.DataFrame:
     if DATA_MODE == "dynamodb":
         try:
-            from utils.dynamodb import scan_store_performance
-            df = pd.DataFrame(scan_store_performance())
-        except:
+            from utils.dynamodb import scan_stores
+            from decimal import Decimal
+            rows = scan_stores()
+            clean = [{k: float(v) if isinstance(v, Decimal) else v for k, v in r.items()} for r in rows]
+            df = pd.DataFrame(clean)
+        except Exception as e:
+            print(f"[store] error: {e}")
             return pd.DataFrame()
     else:
         df = pd.read_excel(DATA_PATH, sheet_name="store_performance")
