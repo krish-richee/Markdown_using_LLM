@@ -92,6 +92,10 @@ def get_dashboard(from_date: str = None, to_date: str = None):
     avg_st        = round(float(metrics["sell_through_rate"].mean()), 1)
     total_stock   = int(metrics["quantity"].sum())
     abc_counts    = metrics["abc_class"].value_counts().to_dict()
+    # Use price*quantity as proxy when total_revenue missing
+    if "total_revenue" not in metrics.columns or metrics["total_revenue"].sum() == 0:
+        metrics = metrics.copy()
+        metrics["total_revenue"] = metrics["price"] * metrics["quantity"]
 
     brand_rev = metrics.groupby("brand")["total_revenue"].sum().sort_values(ascending=False).head(10)
     brand_revenue = [{"brand": str(k), "revenue": round(float(v), 0)} for k, v in brand_rev.items()]
