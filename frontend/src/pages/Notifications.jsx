@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 
-const BASE = "http://127.0.0.1:8002";
+const BASE = "https://markdownusingllm-production.up.railway.app";
 
 const SEV = {
   HIGH:   { bg:"#fee2e2", color:"#dc2626", dot:"#dc2626", label:"🚨 HIGH" },
