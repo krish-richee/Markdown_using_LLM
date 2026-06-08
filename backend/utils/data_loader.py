@@ -251,7 +251,20 @@ def load_orders() -> pd.DataFrame:
 def load_order_items() -> pd.DataFrame:
     if DATA_MODE == "dynamodb":
         from utils.dynamodb import scan_orders
-        df = pd.DataFrame(scan_orders())
+        rows = scan_orders()
+        df = pd.DataFrame(rows)
+        # Map DynamoDB order fields to order_items format
+        if not df.empty:
+            if "qty_ordered" not in df.columns:
+                df["qty_ordered"] = df.get("grand_total", pd.Series(1, index=df.index))
+            if "row_total" not in df.columns:
+                df["row_total"] = df.get("net_revenue", pd.Series(0, index=df.index))
+            if "price" not in df.columns:
+                df["price"] = df.get("grand_total", pd.Series(0, index=df.index))
+            if "order_state" not in df.columns:
+                df["order_state"] = df.get("state", "complete")
+            if "product_id" not in df.columns:
+                df["product_id"] = "unknown"
     else:
         df = pd.read_excel(DATA_PATH, sheet_name="order_items")
     df["order_date"]  = pd.to_datetime(df["order_date"],  errors="coerce")
