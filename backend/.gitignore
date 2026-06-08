@@ -1,0 +1,9 @@
+cat > .gitignore << 'EOF'
+venv/
+.env
+__pycache__/
+*.pyc
+data/*.xlsx
+data/*.csv
+.streamlit/secrets.toml
+EOF

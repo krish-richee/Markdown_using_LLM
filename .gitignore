@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+*.xlsx
+data/actions_log.jsonl
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# OS
+.DS_Store

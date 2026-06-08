@@ -1,0 +1,459 @@
+/* ═══════════════════════════════════════════════════════════════
+   RetailAI — White Light Theme
+   Inspired by Growdhi.ai dashboard
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Global reset ─────────────────────────────────────────────── */
+html, body, [class*="css"] {
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    background-color: #f8f9fb !important;
+    color: #1a1d23 !important;
+}
+
+/* ── Main container ───────────────────────────────────────────── */
+.main .block-container {
+    padding: 1.5rem 2rem !important;
+    max-width: 1400px !important;
+    background-color: #f8f9fb !important;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background-color: #ffffff !important;
+    border-right: 1px solid #e8eaed !important;
+    padding-top: 0 !important;
+}
+
+[data-testid="stSidebar"] .block-container {
+    padding: 1rem !important;
+}
+
+/* ── Sidebar brand header ─────────────────────────────────────── */
+.sidebar-brand {
+    padding: 1rem;
+    border-bottom: 1px solid #e8eaed;
+    margin-bottom: 1rem;
+}
+
+.sidebar-brand-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1d23;
+}
+
+.sidebar-brand-sub {
+    font-size: 0.7rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* ── Sidebar nav items ────────────────────────────────────────── */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+    margin-bottom: 2px;
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+.nav-item:hover {
+    background-color: #f3f4f6;
+    color: #1a1d23;
+}
+
+.nav-item.active {
+    background-color: #eef2ff;
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+.nav-section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.75rem 0.75rem 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.nav-badge {
+    margin-left: auto;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+.nav-badge-green {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+/* ── Page header ──────────────────────────────────────────────── */
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1d23;
+    margin: 0;
+}
+
+.page-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.2rem;
+}
+
+/* ── KPI cards ────────────────────────────────────────────────── */
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    text-align: center;
+    transition: box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a1d23;
+    line-height: 1.2;
+}
+
+.kpi-value-green  { color: #16a34a; }
+.kpi-value-red    { color: #dc2626; }
+.kpi-value-purple { color: #7c3aed; }
+.kpi-value-blue   { color: #2563eb; }
+.kpi-value-orange { color: #ea580c; }
+
+.kpi-delta {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 0.3rem;
+}
+
+.kpi-delta-up   { color: #16a34a; }
+.kpi-delta-down { color: #dc2626; }
+
+/* ── Metric cards (streamlit override) ───────────────────────── */
+[data-testid="stMetric"] {
+    background: #ffffff !important;
+    border: 1px solid #e8eaed !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.25rem !important;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 0.75rem !important;
+    color: #6b7280 !important;
+    font-weight: 500 !important;
+}
+
+[data-testid="stMetricValue"] {
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+    color: #1a1d23 !important;
+}
+
+/* ── Store performance cards ──────────────────────────────────── */
+.store-card {
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.store-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.store-card-hot  { border-left: 4px solid #16a34a; }
+.store-card-avg  { border-left: 4px solid #f59e0b; }
+.store-card-cold { border-left: 4px solid #3b82f6; }
+
+.store-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1a1d23;
+}
+
+.store-badge-hot  {
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+.store-badge-avg  {
+    background: #fef3c7;
+    color: #d97706;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+.store-badge-cold {
+    background: #dbeafe;
+    color: #2563eb;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+.store-sell-through {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1d23;
+}
+
+.store-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.2rem;
+}
+
+/* ── Markdown ladder cards ────────────────────────────────────── */
+.ladder-card {
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.ladder-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1d23;
+    margin-bottom: 0.75rem;
+}
+
+.ladder-step {
+    background: #f3f4f6;
+    border: 1px solid #e8eaed;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.ladder-step-active {
+    background: #eef2ff;
+    border: 2px solid #4f46e5;
+    color: #4f46e5;
+}
+
+.ladder-step-completed {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #16a34a;
+}
+
+.ladder-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+/* ── Health badges ────────────────────────────────────────────── */
+.health-green {
+    background: #dcfce7;
+    color: #16a34a;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.health-yellow {
+    background: #fef3c7;
+    color: #d97706;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.health-red {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────── */
+[data-testid="stTabs"] [role="tablist"] {
+    border-bottom: 2px solid #e8eaed !important;
+    gap: 0 !important;
+}
+
+[data-testid="stTabs"] [role="tab"] {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+    padding: 0.6rem 1.25rem !important;
+    border-radius: 0 !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+[data-testid="stTabs"] [role="tab"][aria-selected="true"] {
+    color: #4f46e5 !important;
+    border-bottom: 2px solid #4f46e5 !important;
+    font-weight: 600 !important;
+    background: transparent !important;
+}
+
+/* ── Dataframe ────────────────────────────────────────────────── */
+[data-testid="stDataFrame"] {
+    border: 1px solid #e8eaed !important;
+    border-radius: 8px !important;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+[data-testid="stButton"] button {
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+}
+
+[data-testid="stButton"] button[kind="primary"] {
+    background-color: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+}
+
+/* ── Divider ──────────────────────────────────────────────────── */
+hr {
+    border-color: #e8eaed !important;
+    margin: 1.25rem 0 !important;
+}
+
+/* ── Selectbox / inputs ───────────────────────────────────────── */
+[data-testid="stSelectbox"] > div,
+[data-testid="stMultiSelect"] > div {
+    border-radius: 8px !important;
+    border-color: #e8eaed !important;
+}
+
+/* ── Info / warning / error boxes ────────────────────────────── */
+[data-testid="stAlert"] {
+    border-radius: 8px !important;
+    border-left-width: 4px !important;
+}
+
+/* ── Expander ─────────────────────────────────────────────────── */
+[data-testid="stExpander"] {
+    border: 1px solid #e8eaed !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+}
+
+/* ── Top bar ──────────────────────────────────────────────────── */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e8eaed;
+    margin-bottom: 1.5rem;
+}
+
+.topbar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1d23;
+}
+
+.topbar-meta {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* ── Agent output cards ───────────────────────────────────────── */
+.agent-card {
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.agent-card-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.agent-card-rec {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1a1d23;
+    margin-top: 0.2rem;
+}
+
+.agent-card-reasoning {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.3rem;
+    line-height: 1.5;
+}
+
+.confidence-bar-wrap {
+    background: #f3f4f6;
+    border-radius: 4px;
+    height: 4px;
+    margin-top: 0.5rem;
+}
+
+.confidence-bar {
+    background: #4f46e5;
+    border-radius: 4px;
+    height: 4px;
+}
