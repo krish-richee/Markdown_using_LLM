@@ -26,7 +26,7 @@ from config.settings         import MAX_CRITIC_RETRIES
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "https://markdown-using-llm.vercel.app", "*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
