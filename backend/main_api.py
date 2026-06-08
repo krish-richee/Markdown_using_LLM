@@ -465,6 +465,8 @@
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+@app.get("/health")
+def health(): return {"status": "ok"}
 from pydantic import BaseModel
 import pandas as pd
 import json, os
@@ -487,6 +489,10 @@ from agents.critic_agent     import CriticAgent
 from agents.base_agent       import AgentStatus
 from config.settings         import MAX_CRITIC_RETRIES
 from utils.dynamodb          import scan_monthly_revenue
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 app = FastAPI()
 app.add_middleware(
