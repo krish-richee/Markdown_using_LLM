@@ -1,4 +1,4 @@
-// const BASE = "http://127.0.0.1:8002";
+// const BASE = "https://markdownusingllm-pjbn-production.up.railway.app";
 
 // export async function fetchDashboard(from_date, to_date) {
 //   const params = from_date && to_date ? `?from_date=${from_date}&to_date=${to_date}` : "";
@@ -34,7 +34,7 @@
 
 
 
-const BASE = "http://127.0.0.1:8002";
+const BASE = "https://markdownusingllm-pjbn-production.up.railway.app";
 
 // Simple in-memory cache — survives page tab switches, cleared on refresh
 const _cache = {};
