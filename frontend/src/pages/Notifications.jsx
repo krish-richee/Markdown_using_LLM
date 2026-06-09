@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 
-const BASE = "https://markdownusingllm-production.up.railway.app";
+// BASE removed — using client.js
 
 const SEV = {
   HIGH:   { bg:"#fee2e2", color:"#dc2626", dot:"#dc2626", label:"🚨 HIGH" },
