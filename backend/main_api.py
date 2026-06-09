@@ -477,3 +477,79 @@ def test_notification():
     )
     result = NotificationAgent().notify(test_product, test_decision)
     return {"status": "sent", "alerts": result["alerts_sent"]}
+# ── Dashboard sub-endpoints ───────────────────────────────────────────────
+@app.get("/api/dashboard/kpis")
+def get_kpis():
+    data = get_dashboard()
+    return data["kpis"]
+
+@app.get("/api/dashboard/revenue")
+def get_revenue():
+    data = get_dashboard()
+    return {"brand_revenue": data["brand_revenue"], "cat_revenue": data["cat_revenue"]}
+
+@app.get("/api/dashboard/risk")
+def get_risk():
+    data = get_dashboard()
+    return {"risk_breakdown": data["risk_breakdown"], "cat_sellthrough": data["cat_sellthrough"]}
+
+@app.get("/api/dashboard/stores")
+def get_stores():
+    data = get_dashboard()
+    return {"stores": data["store_performance"]}
+
+@app.get("/api/dashboard/insights")
+def get_insights():
+    data = get_dashboard()
+    return {"insights": data["insights"]}
+
+@app.get("/api/dashboard/trend")
+def get_trend():
+    data = get_dashboard()
+    return {"revenue_trend": data["revenue_trend"]}
+
+# ── Planner sub-endpoints ─────────────────────────────────────────────────
+@app.get("/api/planner/summary")
+def get_planner_summary():
+    data = get_planner()
+    return data["summary"]
+
+@app.get("/api/planner/candidates")
+def get_planner_candidates(category: str = "All", limit: int = 30):
+    data = get_planner()
+    candidates = data["ladders"]
+    if category != "All":
+        candidates = [c for c in candidates if c["category"] == category]
+    return {"candidates": candidates[:limit], "total": len(candidates)}
+
+@app.get("/api/planner/by-category")
+def get_planner_by_category():
+    data = get_planner()
+    grouped = {}
+    for c in data["ladders"]:
+        cat = c["category"]
+        grouped.setdefault(cat, []).append(c)
+    return {"by_category": {k: {"count": len(v), "items": v} for k, v in grouped.items()}}
+
+# ── Products sub-endpoints ────────────────────────────────────────────────
+@app.get("/api/products/risk/{level}")
+def get_products_by_risk(level: str):
+    data = get_products(risk=level.upper())
+    return {"products": data["products"], "total": len(data["products"])}
+
+@app.get("/api/products/category/{category}")
+def get_products_by_category(category: str):
+    data = get_products(category=category)
+    return {"products": data["products"], "total": len(data["products"])}
+
+@app.get("/api/products/{product_id}")
+def get_single_product(product_id: str):
+    data = get_products()
+    match = [p for p in data["products"] if p["product_id"] == product_id]
+    if not match:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return match[0]
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
