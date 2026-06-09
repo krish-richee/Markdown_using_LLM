@@ -23,7 +23,11 @@ from agents.critic_agent     import CriticAgent
 from agents.base_agent       import AgentStatus
 from config.settings         import MAX_CRITIC_RETRIES
 
-app = FastAPI()
+app = FastAPI(
+    title="Markdown Management API",
+    description="AI-powered retail markdown decision engine — Price IQ · Growdhi.ai",
+    version="1.0.0",
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -66,7 +70,7 @@ def _recompute_risk(df):
     )
     return df
 
-@app.get("/api/dashboard")
+@app.get("/api/dashboard", tags=["📊 Dashboard"])
 def get_dashboard(from_date: str = None, to_date: str = None):
     metrics     = compute_sales_metrics()
     stores      = load_store_performance()
@@ -209,7 +213,7 @@ def get_dashboard(from_date: str = None, to_date: str = None):
         "insights":          insights,
     }
 
-@app.get("/api/products")
+@app.get("/api/products", tags=["🛍️ Actions"])
 def get_products(category: str = "All", risk: str = "All", limit: int = 500):
     metrics = compute_sales_metrics()
     metrics = _recompute_risk(metrics)
@@ -244,7 +248,7 @@ def get_products(category: str = "All", risk: str = "All", limit: int = 500):
 class RunRequest(BaseModel):
     product_id: str
 
-@app.post("/api/run")
+@app.post("/api/run", tags=["🛍️ Actions"])
 def run_agents(req: RunRequest):
     metrics       = compute_sales_metrics()
     elasticity_df = compute_elasticity_data()
@@ -308,11 +312,11 @@ def run_agents(req: RunRequest):
     })
     return result
 
-@app.get("/api/history")
+@app.get("/api/history", tags=["📋 History"])
 def get_history():
     return {"history": _load_actions()[::-1]}
 
-@app.get("/api/planner")
+@app.get("/api/planner", tags=["📅 Planner"])
 def get_planner():
     import math
     metrics    = compute_sales_metrics()
@@ -413,7 +417,7 @@ def get_planner():
 # ── Notifications ──────────────────────────────────────────────────────────
 NOTIF_FILE = "data/notification_log.jsonl"
 
-@app.get("/api/notifications")
+@app.get("/api/notifications", tags=["🔔 Notifications"])
 def get_notifications():
     if not os.path.exists(NOTIF_FILE):
         return {"notifications": [], "total": 0, "high": 0, "medium": 0, "low": 0}
@@ -449,7 +453,7 @@ def get_notifications():
         "low":    len([a for a in all_alerts if a["severity"] == "LOW"]),
     }
 
-@app.post("/api/test-notify")
+@app.post("/api/test-notify", tags=["🔔 Notifications"])
 def test_notification():
     from agents.notification_agent import NotificationAgent
     from agents.base_agent import CriticVerdict, FinalDecision
@@ -478,43 +482,43 @@ def test_notification():
     result = NotificationAgent().notify(test_product, test_decision)
     return {"status": "sent", "alerts": result["alerts_sent"]}
 # ── Dashboard sub-endpoints ───────────────────────────────────────────────
-@app.get("/api/dashboard/kpis")
+@app.get("/api/dashboard/kpis", tags=["📊 Dashboard"])
 def get_kpis():
     data = get_dashboard()
     return data["kpis"]
 
-@app.get("/api/dashboard/revenue")
+@app.get("/api/dashboard/revenue", tags=["📊 Dashboard"])
 def get_revenue():
     data = get_dashboard()
     return {"brand_revenue": data["brand_revenue"], "cat_revenue": data["cat_revenue"]}
 
-@app.get("/api/dashboard/risk")
+@app.get("/api/dashboard/risk", tags=["📊 Dashboard"])
 def get_risk():
     data = get_dashboard()
     return {"risk_breakdown": data["risk_breakdown"], "cat_sellthrough": data["cat_sellthrough"]}
 
-@app.get("/api/dashboard/stores")
+@app.get("/api/dashboard/stores", tags=["📊 Dashboard"])
 def get_stores():
     data = get_dashboard()
     return {"stores": data["store_performance"]}
 
-@app.get("/api/dashboard/insights")
+@app.get("/api/dashboard/insights", tags=["📊 Dashboard"])
 def get_insights():
     data = get_dashboard()
     return {"insights": data["insights"]}
 
-@app.get("/api/dashboard/trend")
+@app.get("/api/dashboard/trend", tags=["📊 Dashboard"])
 def get_trend():
     data = get_dashboard()
     return {"revenue_trend": data["revenue_trend"]}
 
 # ── Planner sub-endpoints ─────────────────────────────────────────────────
-@app.get("/api/planner/summary")
+@app.get("/api/planner/summary", tags=["📅 Planner"])
 def get_planner_summary():
     data = get_planner()
     return data["summary"]
 
-@app.get("/api/planner/candidates")
+@app.get("/api/planner/candidates", tags=["📅 Planner"])
 def get_planner_candidates(category: str = "All", limit: int = 30):
     data = get_planner()
     candidates = data["ladders"]
@@ -522,7 +526,7 @@ def get_planner_candidates(category: str = "All", limit: int = 30):
         candidates = [c for c in candidates if c["category"] == category]
     return {"candidates": candidates[:limit], "total": len(candidates)}
 
-@app.get("/api/planner/by-category")
+@app.get("/api/planner/by-category", tags=["📅 Planner"])
 def get_planner_by_category():
     data = get_planner()
     grouped = {}
@@ -532,17 +536,17 @@ def get_planner_by_category():
     return {"by_category": {k: {"count": len(v), "items": v} for k, v in grouped.items()}}
 
 # ── Products sub-endpoints ────────────────────────────────────────────────
-@app.get("/api/products/risk/{level}")
+@app.get("/api/products/risk/{level}", tags=["🛍️ Actions"])
 def get_products_by_risk(level: str):
     data = get_products(risk=level.upper())
     return {"products": data["products"], "total": len(data["products"])}
 
-@app.get("/api/products/category/{category}")
+@app.get("/api/products/category/{category}", tags=["🛍️ Actions"])
 def get_products_by_category(category: str):
     data = get_products(category=category)
     return {"products": data["products"], "total": len(data["products"])}
 
-@app.get("/api/products/{product_id}")
+@app.get("/api/products/{product_id}", tags=["🛍️ Actions"])
 def get_single_product(product_id: str):
     data = get_products()
     match = [p for p in data["products"] if p["product_id"] == product_id]
@@ -550,6 +554,6 @@ def get_single_product(product_id: str):
         raise HTTPException(status_code=404, detail="Product not found")
     return match[0]
 
-@app.get("/health")
+@app.get("/health", tags=["⚙️ System"])
 def health():
     return {"status": "ok"}
